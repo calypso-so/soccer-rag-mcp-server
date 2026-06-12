@@ -25,6 +25,7 @@ That is it. No API key, no dashboard setup, no copy-pasting secrets. The server 
 - Grounded answers from `calypso-rag-agent:worldcup`
 - Citation-rich responses through the Calypso Responses API
 - Handy resources like `soccer://corpus-info` and `soccer://starter-prompts`
+- A clean `ask-world-cup-soccer` MCP tool for match-history questions
 - A read-only demo surface, so agents can explore safely
 
 ## Claude Desktop Setup
@@ -34,7 +35,7 @@ Add this to your Claude Desktop MCP config:
 ```json
 {
   "mcpServers": {
-    "world-cup-soccer-rag": {
+    "world-cup-soccer": {
       "command": "npx",
       "args": ["-y", "@calypsohq/soccer-rag-mcp-server"]
     }
@@ -42,7 +43,7 @@ Add this to your Claude Desktop MCP config:
 }
 ```
 
-Restart Claude Desktop, then ask Claude to use `world-cup-soccer-rag` for grounded soccer questions.
+Restart Claude Desktop, then ask Claude to use `world-cup-soccer` for grounded soccer questions. The primary tool is `ask-world-cup-soccer`.
 
 ## Bring Your Own Key
 
@@ -59,7 +60,7 @@ For Claude Desktop BYOK mode, add an `env` block:
 ```json
 {
   "mcpServers": {
-    "world-cup-soccer-rag": {
+    "world-cup-soccer": {
       "command": "npx",
       "args": ["-y", "@calypsohq/soccer-rag-mcp-server"],
       "env": {

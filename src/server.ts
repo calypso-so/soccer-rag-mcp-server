@@ -15,6 +15,7 @@ import {
   CALYPSO_UPLOAD_KNOWLEDGE_FILES_BATCH,
   CALYPSO_WORLDCUP_MODEL,
   type CalypsoRuntimeConfig,
+  WORLD_CUP_SOCCER_TOOL,
 } from "./config.js";
 import { uploadKnowledgeFile, uploadKnowledgeFilesBatch } from "./files.js";
 import { type CalypsoRagModelCatalog, modelIdsFromCatalog } from "./models.js";
@@ -188,6 +189,8 @@ export function createCalypsoMcpServer(options: {
   const modelListText = discoveredModelIds
     .map((modelId) => `\`${modelId}\``)
     .join(", ");
+  const ragToolName =
+    config.authMode === "demo" ? WORLD_CUP_SOCCER_TOOL : CALYPSO_RAG_AGENT;
 
   function resolveRagModelId(value?: string): string {
     if (config.authMode === "demo") {
@@ -261,7 +264,8 @@ export function createCalypsoMcpServer(options: {
 
   const server = new McpServer(
     {
-      name: packageInfo.name,
+      name:
+        config.authMode === "demo" ? "World Cup Soccer RAG" : "Calypso RAG MCP",
       version: packageInfo.version,
     },
     {
@@ -327,7 +331,7 @@ export function createCalypsoMcpServer(options: {
             ? "Public demo MCP bearer (zero-config World Cup demo)"
             : "Calypso project API key via CALYPSO_API_KEY or --api-key",
         tools: [
-          CALYPSO_RAG_AGENT,
+          ragToolName,
           ...(config.authMode === "byok"
             ? [
                 CALYPSO_LIST_KNOWLEDGE_BUCKETS,
@@ -429,7 +433,7 @@ export function createCalypsoMcpServer(options: {
               config.authMode === "demo"
                 ? "World Cup demo retrieval"
                 : "Knowledge retrieval",
-            tool: CALYPSO_RAG_AGENT,
+            tool: ragToolName,
             models: discoveredModelIds,
             steps:
               config.authMode === "demo"
@@ -525,7 +529,7 @@ export function createCalypsoMcpServer(options: {
           content: {
             type: "text" as const,
             text: [
-              "Use calypso-rag-agent to answer from the World Cup international soccer results corpus.",
+              `Use ${ragToolName} to answer from the World Cup international soccer results corpus.`,
               `Available RAG models: ${modelListText}.`,
               `Default demo model: ${CALYPSO_WORLDCUP_MODEL}.`,
               `Topic: ${topic || "Describe the topic or question here."}`,
@@ -608,7 +612,7 @@ export function createCalypsoMcpServer(options: {
             content: {
               type: "text" as const,
               text: [
-                `Use calypso-rag-agent with model ${CALYPSO_WORLDCUP_MODEL}.`,
+                `Use ${ragToolName} with model ${CALYPSO_WORLDCUP_MODEL}.`,
                 starterPrompt.prompt,
               ].join("\n"),
             },
@@ -1082,17 +1086,32 @@ export function createCalypsoMcpServer(options: {
   }
 
   server.tool(
-    CALYPSO_RAG_AGENT,
+    ragToolName,
     [
-      "[CALYPSO RAG AGENT]",
-      "Sends each prompt directly to the Calypso RAG agent using the full conversation context.",
+      config.authMode === "demo"
+        ? "[ASK WORLD CUP SOCCER]"
+        : "[CALYPSO RAG AGENT]",
+      config.authMode === "demo"
+        ? "Answers grounded questions against the World Cup international soccer results corpus."
+        : "Sends each prompt directly to the Calypso RAG agent using the full conversation context.",
       "",
-      "Use this when you want Calypso knowledge retrieval and grounded answers from the RAG backend.",
+      config.authMode === "demo"
+        ? "Use this for soccer history, World Cup results, rivalries, goalscorers, shootouts, and team comparisons."
+        : "Use this when you want Calypso knowledge retrieval and grounded answers from the RAG backend.",
       "Typical requests:",
-      '- "Summarize the key points from our onboarding documentation"',
-      '- "What does the knowledge base say about campaign approval rules?"',
-      '- "Compare the documented indexing flow with the retrieval flow"',
-      '- "Answer using the uploaded file ids: [\\"file_123\\"]"',
+      ...(config.authMode === "demo"
+        ? [
+            '- "How many times has Chile beaten Argentina?"',
+            '- "Compare Brazil and Germany across World Cup eras."',
+            '- "Which teams dominated international soccer by decade?"',
+            '- "What patterns stand out in penalty shootouts?"',
+          ]
+        : [
+            '- "Summarize the key points from our onboarding documentation"',
+            '- "What does the knowledge base say about campaign approval rules?"',
+            '- "Compare the documented indexing flow with the retrieval flow"',
+            '- "Answer using the uploaded file ids: [\\"file_123\\"]"',
+          ]),
       "",
       "Responses API behavior:",
       "- First turns start a named Calypso conversation via `/v1/responses`.",
@@ -1139,14 +1158,14 @@ export function createCalypsoMcpServer(options: {
           if (String(model || "").trim()) {
             const resetState = resetConversationState(selectedModel);
             await logEvent("notice", "Calypso RAG conversation reset.", {
-              tool: CALYPSO_RAG_AGENT,
+              tool: ragToolName,
               model: selectedModel,
               conversationId: resetState.conversationId,
             });
           } else {
             conversationStates.clear();
             await logEvent("notice", "Calypso RAG conversations reset.", {
-              tool: CALYPSO_RAG_AGENT,
+              tool: ragToolName,
               models: discoveredModelIds,
             });
           }
@@ -1161,7 +1180,7 @@ export function createCalypsoMcpServer(options: {
         }
 
         await logEvent("info", "Calling Calypso RAG agent.", {
-          tool: CALYPSO_RAG_AGENT,
+          tool: ragToolName,
           model: selectedModel,
           conversationId: conversationState.conversationId,
           fileCount: normalizedFileIds?.length || 0,
@@ -1194,7 +1213,7 @@ export function createCalypsoMcpServer(options: {
           }
 
           await logEvent("info", "Calypso RAG agent response completed.", {
-            tool: CALYPSO_RAG_AGENT,
+            tool: ragToolName,
             model: selectedModel,
             conversationId: conversationState.conversationId,
             responseId: grounded.responseId,
@@ -1260,7 +1279,7 @@ export function createCalypsoMcpServer(options: {
         }
 
         await logEvent("info", "Calypso RAG agent response completed.", {
-          tool: CALYPSO_RAG_AGENT,
+          tool: ragToolName,
           model: selectedModel,
           conversationId: conversationState.conversationId,
           responseId: result.responseId,
@@ -1276,9 +1295,9 @@ export function createCalypsoMcpServer(options: {
           ],
         };
       } catch (error) {
-        console.error(`Error calling ${CALYPSO_RAG_AGENT}:`, error);
+        console.error(`Error calling ${ragToolName}:`, error);
         await logEvent("error", "Calypso RAG agent call failed.", {
-          tool: CALYPSO_RAG_AGENT,
+          tool: ragToolName,
           model: String(model || "").trim() || modelCatalog.defaultModel,
           error: error instanceof Error ? error.message : String(error),
         });
@@ -1287,7 +1306,7 @@ export function createCalypsoMcpServer(options: {
           content: [
             {
               type: "text" as const,
-              text: `Error: Failed to process ${CALYPSO_RAG_AGENT} query. ${error}`,
+              text: `Error: Failed to process ${ragToolName} query. ${error}`,
             },
           ],
         };

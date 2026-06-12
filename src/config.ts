@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const CALYPSO_RAG_AGENT = "calypso-rag-agent";
+export const WORLD_CUP_SOCCER_TOOL = "ask-world-cup-soccer";
 export const CALYPSO_WORLDCUP_MODEL = "calypso-rag-agent:worldcup";
 export const BUILTIN_DEMO_MCP_BEARER =
   "sk-demo-mcp-worldcup-calypso-public-demo-v1";

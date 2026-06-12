@@ -9,7 +9,7 @@ const repoRoot = path.resolve(__dirname, "..");
 const serverPath = path.join(repoRoot, "dist", "index.js");
 
 const requiredTools = {
-  "calypso-rag-agent": ["prompt", "model"],
+  "ask-world-cup-soccer": ["prompt", "model"],
 };
 
 const requiredResources = [
