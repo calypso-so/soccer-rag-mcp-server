@@ -27,6 +27,23 @@ That is it. No API key, no dashboard setup, no copy-pasting secrets. The server 
 - Handy resources like `soccer://corpus-info` and `soccer://starter-prompts`
 - A read-only demo surface, so agents can explore safely
 
+## Claude Desktop Setup
+
+Add this to your Claude Desktop MCP config:
+
+```json
+{
+  "mcpServers": {
+    "world-cup-soccer-rag": {
+      "command": "npx",
+      "args": ["-y", "@calypsohq/soccer-rag-mcp-server"]
+    }
+  }
+}
+```
+
+Restart Claude Desktop, then ask Claude to use `world-cup-soccer-rag` for grounded soccer questions.
+
 ## Bring Your Own Key
 
 Want to use your own Calypso project with upload and bucket tools enabled?
@@ -36,6 +53,22 @@ CALYPSO_API_KEY=sk-... npx -y @calypsohq/soccer-rag-mcp-server
 ```
 
 BYOK mode switches from the public World Cup demo into your own Calypso knowledge workspace.
+
+For Claude Desktop BYOK mode, add an `env` block:
+
+```json
+{
+  "mcpServers": {
+    "world-cup-soccer-rag": {
+      "command": "npx",
+      "args": ["-y", "@calypsohq/soccer-rag-mcp-server"],
+      "env": {
+        "CALYPSO_API_KEY": "sk-..."
+      }
+    }
+  }
+}
+```
 
 ## Development
 

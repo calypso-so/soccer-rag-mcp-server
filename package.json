@@ -1,6 +1,6 @@
 {
   "name": "@calypsohq/soccer-rag-mcp-server",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Zero-config World Cup RAG MCP server for calypso-rag-agent:worldcup via the public demo MCP bearer.",
   "main": "dist/index.js",
   "homepage": "https://rag.calypso.so/demos/world-cup-results",
