@@ -1,0 +1,65 @@
+{
+  "name": "@calypsohq/soccer-rag-mcp-server",
+  "version": "0.1.0",
+  "description": "Zero-config World Cup RAG MCP server for calypso-rag-agent:worldcup via the public demo MCP bearer.",
+  "main": "dist/index.js",
+  "homepage": "https://rag.calypso.so/demos/world-cup-results",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/calypso-so/soccer-rag-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/calypso-so/soccer-rag-mcp-server/issues"
+  },
+  "type": "module",
+  "bin": {
+    "soccer-rag-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc && node -e \"require('fs').chmodSync('dist/index.js', '755')\"",
+    "typecheck": "tsc --noEmit",
+    "smoke:stdio": "node \"scripts/smoke-stdio.mjs\"",
+    "test": "npm run build && node --test tests/*.test.mjs",
+    "start": "node dist/index.js",
+    "lint": "biome check --indent-style=space --indent-width=2 src scripts tests",
+    "format": "biome format --write --indent-style=space --indent-width=2 src scripts tests package.json tsconfig.json",
+    "format:check": "biome format --indent-style=space --indent-width=2 src scripts tests package.json tsconfig.json",
+    "prepare": "npm run build",
+    "release": "npm run build && npm publish"
+  },
+  "keywords": [
+    "mcp",
+    "calypso",
+    "aicore",
+    "rag",
+    "worldcup",
+    "soccer",
+    "responses-api",
+    "agents",
+    "openai-compatible"
+  ],
+  "author": "Calypso",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "dotenv": "^16.3.1",
+    "openai": "^4.20.1",
+    "undici": "^5.29.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.16",
+    "@types/node": "^20.10.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
